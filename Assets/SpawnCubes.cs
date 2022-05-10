@@ -19,7 +19,10 @@ public class SpawnCubes : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (transform.childCount == 0)
+        {
+            Debug.Log("FINISH");
+        }
     }
 
     public IEnumerator Spawn()
@@ -28,19 +31,31 @@ public class SpawnCubes : MonoBehaviour
         {
             cubesSpawned -= 1;
 
-            Vector3 pos = new Vector3(Random.Range(-4.5f, 4.5f), Random.Range(0.5f, 4.5f), Random.Range(-4.5f, 4.5f));
-            Quaternion rot = new Quaternion(0, 1, 0, Random.Range(0.0f, 360.0f));
-            float scale = Random.Range(1.0f, 3.0f);
-            GameObject cube = Instantiate(cubes[Random.Range(0, cubes.Length - 1)], gameObject.transform);//, pos, rot);
+            float x = Random.Range(-4.5f, 4.5f);
+            float y = Random.Range(0.5f, 4.5f);
+            float z = Random.Range(-4.5f, 4.5f);
+
+            if (x < 2f && x > -2f && y < 2f && y > -2f && z < 2f && z > -2f)
+            {
+                x = x <= 0f ? -2f : 2f;
+                y = y <= 0f ? -2f : 2f;
+                z = z <= 0f ? -2f : 2f;
+            }
+
+            Vector3 pos = new Vector3(x, y, z);
+            Quaternion rot = Quaternion.Euler(0, Random.Range(0, 360), 0); //Random.rotation;
+            float scale = Random.Range(1.0f, 2.0f);
+            GameObject cube = Instantiate(cubes[Random.Range(0, cubes.Length - 1)], gameObject.transform);
             cube.transform.SetPositionAndRotation(pos, rot);
             cube.transform.localScale *= scale;
-            yield return new WaitForSeconds(6.0f / cubeNum);
+            yield return new WaitForSeconds(6f / cubeNum);
 
             StartCoroutine("Spawn");
         }
         else
         {
-            StopAllCoroutines();
+            StopCoroutine("Spawn");
+            Debug.Log("ALL CUBES SPAWNED");
         }
        
     }

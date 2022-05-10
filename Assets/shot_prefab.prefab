@@ -193,6 +193,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounces: 3
+  sparks: {fileID: 4725289972334563088, guid: cc39b13455b53f34b823fba36844457e, type: 3}
+  blocks: {fileID: 3168429558253825546, guid: 2be7012757802ac49ae04289deab5fc9, type: 3}
 --- !u!54 &1231107674782070282
 Rigidbody:
   m_ObjectHideFlags: 0

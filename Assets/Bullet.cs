@@ -6,6 +6,8 @@ public class Bullet : MonoBehaviour
 {
     private Vector3 direction;
     [SerializeField] private int bounces = 3;
+    [SerializeField] private GameObject sparks;
+    [SerializeField] private GameObject blocks;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +23,9 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        GameObject _sparks = Instantiate(sparks, transform.position, Quaternion.identity);
+        _sparks.GetComponent<ParticleSystem>().Play();
+
         if (collision.gameObject.CompareTag("Playground"))
         {
             Vector3 inDirection = transform.forward;
@@ -40,7 +45,11 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Cube"))
         {
             Destroy(collision.gameObject);
+            GameObject _blocks = Instantiate(blocks, collision.gameObject.transform.position, Quaternion.identity);
+            _blocks.GetComponent<ParticleSystem>().Play();
             Destroy(gameObject);
+
+
         }
         
     }
