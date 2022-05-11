@@ -10,6 +10,7 @@ public class Weapon : MonoBehaviour
 
     public Transform cannon;
     public GameObject bullet;
+    public GameObject shotParticles;
 
     // Start is called before the first frame update
     void Start()
@@ -26,10 +27,14 @@ public class Weapon : MonoBehaviour
     public void Shoot(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         Debug.Log("shoot");
-        //Rigidbody rb = 
+        Instantiate(shotParticles, cannon.position, cannon.rotation);
+
         Instantiate(bullet, cannon.position, cannon.rotation);//.GetComponent<Rigidbody>();
+        GetComponent<AudioSource>().Play();
         //rb.gameObject.transform.ro
         //rb.AddRelativeForce(Vector3.right, ForceMode.Impulse);
+
+
         //ApplyRecoil();
     }
 

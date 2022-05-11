@@ -23,8 +23,8 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        GameObject _sparks = Instantiate(sparks, transform.position, Quaternion.identity);
-        _sparks.GetComponent<ParticleSystem>().Play();
+        Instantiate(sparks, transform.position, Quaternion.identity);
+        //_sparks.GetComponent<ParticleSystem>().Play();
 
         if (collision.gameObject.CompareTag("Playground"))
         {
@@ -45,12 +45,11 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.CompareTag("Cube"))
         {
             Destroy(collision.gameObject);
-            GameObject _blocks = Instantiate(blocks, collision.gameObject.transform.position, Quaternion.identity);
-            _blocks.GetComponent<ParticleSystem>().Play();
+
+            ParticleSystemRenderer _blocks = Instantiate(blocks, collision.gameObject.transform.position, Quaternion.identity).GetComponent<ParticleSystemRenderer>();
+            //_blocks.GetComponent<ParticleSystem>().Play();
             Destroy(gameObject);
-
-
         }
-        
+
     }
 }
