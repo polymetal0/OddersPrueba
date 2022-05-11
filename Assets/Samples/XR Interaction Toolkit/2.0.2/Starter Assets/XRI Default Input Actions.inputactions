@@ -798,7 +798,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Fire",
+                    "name": "Menu",
                     "type": "Button",
                     "id": "93c4131a-7d4d-4ba3-b0be-c227fb84d3e7",
                     "expectedControlType": "Button",
@@ -987,11 +987,22 @@
                 {
                     "name": "",
                     "id": "2dd8e4b7-4f6b-40c3-8763-70d3881ecec0",
-                    "path": "<XRSimulatedController>{RightHand}/primaryButton",
+                    "path": "<XRController>{RightHand}/secondaryButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "Fire",
+                    "groups": "Generic XR Controller",
+                    "action": "Menu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a23bcb99-6e32-4135-94bf-982b06994bca",
+                    "path": "<XRController>{RightHand}/menuButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Menu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

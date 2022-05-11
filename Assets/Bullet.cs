@@ -49,6 +49,7 @@ public class Bullet : MonoBehaviour
             ParticleSystemRenderer _blocks = Instantiate(blocks, collision.gameObject.transform.position, Quaternion.identity).GetComponent<ParticleSystemRenderer>();
             //_blocks.GetComponent<ParticleSystem>().Play();
             Destroy(gameObject);
+            FindObjectOfType<GameController>().TargetDestroyed();
         }
 
     }

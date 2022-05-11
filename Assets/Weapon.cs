@@ -12,10 +12,12 @@ public class Weapon : MonoBehaviour
     public GameObject bullet;
     public GameObject shotParticles;
 
+    private GameController gc;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponentInChildren<Rigidbody>();
+        gc = FindObjectOfType<GameController>();
     }
 
     // Update is called once per frame
@@ -26,16 +28,17 @@ public class Weapon : MonoBehaviour
 
     public void Shoot(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
-        Debug.Log("shoot");
-        Instantiate(shotParticles, cannon.position, cannon.rotation);
+        if (gc.state == GameController.PlayingState.Playing)
+        {
+            Debug.Log("shoot");
+            Instantiate(shotParticles, cannon.position, cannon.rotation);
 
-        Instantiate(bullet, cannon.position, cannon.rotation);//.GetComponent<Rigidbody>();
-        GetComponent<AudioSource>().Play();
-        //rb.gameObject.transform.ro
-        //rb.AddRelativeForce(Vector3.right, ForceMode.Impulse);
+            Instantiate(bullet, cannon.position, cannon.rotation);
+            GetComponent<AudioSource>().Play();
 
+            //ApplyRecoil();
+        }
 
-        //ApplyRecoil();
     }
 
     public void ApplyRecoil()
