@@ -1,34 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class Weapon : MonoBehaviour
 {
     [SerializeField] private float recoil;
 
-    private Rigidbody rb;
+    //private Rigidbody rb;
 
-    public Transform cannon;
-    public GameObject bullet;
-    public GameObject shotParticles;
+    [SerializeField] private Transform cannon;
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private GameObject shotParticles;
 
-    private GameController gc;
+
+    private XRInteractorLineVisual pointer;
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponentInChildren<Rigidbody>();
-        gc = FindObjectOfType<GameController>();
+        //rb = GetComponentInChildren<Rigidbody>();
+        pointer = GetComponentInParent<XRInteractorLineVisual>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (GameController.state == GameController.PlayingState.Playing && pointer.enabled)
+        {
+            pointer.enabled = false;
+        }
+        if (GameController.state != GameController.PlayingState.Playing && !pointer.enabled)
+        {
+            pointer.enabled = true;
+        }
     }
 
-    public void Shoot(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    public void Shoot(InputAction.CallbackContext context)
     {
-        if (gc.state == GameController.PlayingState.Playing)
+        if (GameController.state == GameController.PlayingState.Playing && context.performed)
         {
             Debug.Log("shoot");
             Instantiate(shotParticles, cannon.position, cannon.rotation);
@@ -36,13 +46,14 @@ public class Weapon : MonoBehaviour
             Instantiate(bullet, cannon.position, cannon.rotation);
             GetComponent<AudioSource>().Play();
 
-            //ApplyRecoil();
+            //Recoil();
+
         }
 
     }
 
-    public void ApplyRecoil()
+    /*public void Recoil()
     {
-        rb.AddRelativeForce(Vector3.left * recoil, ForceMode.Impulse);
-    }
+        rb.AddRelativeForce(Vector3.back * recoil, ForceMode.Impulse);
+    }*/
 }

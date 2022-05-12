@@ -9,29 +9,25 @@ public class Bullet : MonoBehaviour
     [SerializeField] private GameObject sparks;
     [SerializeField] private GameObject blocks;
 
-    private GameController gc;
     // Start is called before the first frame update
     void Start()
     {
-        gc = FindObjectOfType<GameController>();
         direction = transform.forward;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (gc.state == GameController.PlayingState.Playing)
+        if (GameController.state == GameController.PlayingState.Playing)
         {
-            transform.position += direction * Time.deltaTime * 10f;// * 1000f;
-
+            transform.position += direction * Time.deltaTime * 9f;// * 1000f;
         }
 
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        Instantiate(sparks, transform.position, Quaternion.identity);
-        //_sparks.GetComponent<ParticleSystem>().Play();
+        Instantiate(sparks, transform.position, transform.rotation);
 
         if (collision.gameObject.CompareTag("Playground"))
         {
@@ -53,10 +49,9 @@ public class Bullet : MonoBehaviour
         {
             Destroy(collision.gameObject);
 
-            ParticleSystemRenderer _blocks = Instantiate(blocks, collision.gameObject.transform.position, Quaternion.identity).GetComponent<ParticleSystemRenderer>();
-            //_blocks.GetComponent<ParticleSystem>().Play();
+            Instantiate(blocks, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             Destroy(gameObject);
-            gc.TargetDestroyed();
+            FindObjectOfType<GameController>().TargetDestroyed();
         }
 
     }
