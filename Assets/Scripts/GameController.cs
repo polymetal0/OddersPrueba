@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour
     public GameObject menuPanel;
     public GameObject backgroundPanel;
     public GameObject pausePanel;
+    public GameObject UI;
     public GameObject playground;
 
     public Text timeText;
@@ -34,7 +35,7 @@ public class GameController : MonoBehaviour
 
         timeText.text = "00:00";
 
-        cubeNum = (int)Random.Range(10, 15);
+        cubeNum = 1;// (int)Random.Range(100, 150);
 
         Debug.Log(cubeNum);
 
@@ -68,7 +69,7 @@ public class GameController : MonoBehaviour
     public void TargetDestroyed()
     {
         _score += 10;
-        scoreText.text = string.Format("{0:0000}", _score);
+        scoreText.text = string.Format("{0:00000}", _score);
     }
 
     public void Play()
@@ -81,6 +82,8 @@ public class GameController : MonoBehaviour
         backgroundPanel.SetActive(false);
         pausePanel.SetActive(false);
         menuPanel.SetActive(false);
+
+        UI.SetActive(true);
     }
 
     public void Pause()
@@ -90,34 +93,39 @@ public class GameController : MonoBehaviour
             state = PlayingState.Pause;
             backgroundPanel.SetActive(true);
             pausePanel.SetActive(true);
-           
+            pausePanel.GetComponent<AudioSource>().Play();
+
             StopCoroutine("SpawnTargets");
         }
     }
     
     public void Menu()
     {
-        /* if (state == PlayingState.Playing)
-         {       
-
-         }*/
         if (state == PlayingState.Pause)
         {
-            if (transform.childCount > 0)
+            for (int i = 0; i < transform.childCount; i++)
             {
-                for (int i = 0; i < transform.childCount; i++)
-                {
-                    Destroy(transform.GetChild(i).gameObject);
-                }
+                Destroy(transform.GetChild(i).gameObject);
             }
         }
         state = PlayingState.Menu;
-        menuPanel.transform.position = pausePanel.transform.position;
-        menuPanel.transform.rotation = pausePanel.transform.rotation;
+        //menuPanel.transform.position = pausePanel.transform.position;
+        //menuPanel.transform.rotation = pausePanel.transform.rotation;
         menuPanel.SetActive(true);
+        menuPanel.GetComponent<AudioSource>().Play();
         backgroundPanel.SetActive(true);
         playground.SetActive(false);
         pausePanel.SetActive(false);
+        UI.SetActive(false);
+        Bullet[] bullets = FindObjectsOfType<Bullet>();
+        foreach (Bullet b in bullets)
+        {
+            Destroy(b.gameObject);
+        }
+        t = 0;
+
+        //timeText.text = string.Format("{0:00}:{1:00}", t, t);
+
         CreateTargets();
     }
 
