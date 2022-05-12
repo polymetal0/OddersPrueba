@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     public GameObject menu;
     public GameObject background;
     public GameObject pause;
+    public GameObject playground;
 
     public Text time;
     public Text score;
@@ -39,6 +40,12 @@ public class GameController : MonoBehaviour
     void Update()
     {
         DisplayTime();
+
+        if (transform.childCount == 0 && state == PlayingState.Playing)
+        {
+            Debug.Log("FINISH");
+            Menu();
+        }
     }
 
     private void DisplayTime()
@@ -77,7 +84,7 @@ public class GameController : MonoBehaviour
             state = PlayingState.Pause;
             background.SetActive(true);
             pause.SetActive(true);
-
+           
             StopCoroutine("SpawnTargets");
         }
     }
@@ -89,6 +96,9 @@ public class GameController : MonoBehaviour
             state = PlayingState.Menu;
             menu.transform.position = pause.transform.position;
             menu.transform.rotation = pause.transform.rotation;
+            menu.SetActive(true);
+            background.SetActive(true);
+            playground.SetActive(false);
         }
     }
 

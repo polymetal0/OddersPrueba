@@ -8,16 +8,23 @@ public class Bullet : MonoBehaviour
     [SerializeField] private int bounces = 3;
     [SerializeField] private GameObject sparks;
     [SerializeField] private GameObject blocks;
+
+    private GameController gc;
     // Start is called before the first frame update
     void Start()
     {
+        gc = FindObjectOfType<GameController>();
         direction = transform.forward;
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position += direction * Time.deltaTime * 8f;// * 1000f;
+        if (gc.state == GameController.PlayingState.Playing)
+        {
+            transform.position += direction * Time.deltaTime * 10f;// * 1000f;
+
+        }
 
     }
 
@@ -49,7 +56,7 @@ public class Bullet : MonoBehaviour
             ParticleSystemRenderer _blocks = Instantiate(blocks, collision.gameObject.transform.position, Quaternion.identity).GetComponent<ParticleSystemRenderer>();
             //_blocks.GetComponent<ParticleSystem>().Play();
             Destroy(gameObject);
-            FindObjectOfType<GameController>().TargetDestroyed();
+            gc.TargetDestroyed();
         }
 
     }
