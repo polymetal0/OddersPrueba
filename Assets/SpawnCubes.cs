@@ -7,6 +7,8 @@ public class SpawnCubes : MonoBehaviour
     [SerializeField] private GameObject[] cubes;
     private int cubeNum;
     private int cubesSpawned;
+
+    private GameController gc;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,6 +16,8 @@ public class SpawnCubes : MonoBehaviour
         cubesSpawned = cubeNum;
         Debug.Log(cubeNum);
         StartCoroutine("Spawn");
+
+        gc = FindObjectOfType<GameController>();
     }
 
     // Update is called once per frame
