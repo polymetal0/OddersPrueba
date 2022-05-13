@@ -8,57 +8,65 @@ using Unity.XR.CoreUtils;
 public class GameController : MonoBehaviour
 {
     public static PlayingState state;
+    public enum PlayingState
+    {
+        Menu,
+        Playing,
+        Pause
+    }
 
-    public GameObject menuPanel;
-    public GameObject backgroundPanel;
-    public GameObject pausePanel;
-    public GameObject UI;
-    public GameObject playground;
+    [Header("UI Panels")]
+    [SerializeField] private GameObject menuPanel;
+    [SerializeField] private GameObject backgroundPanel;
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private GameObject UI;
+    [SerializeField] private GameObject scoreList;
 
-    public Text timeText;
-    public Text scoreText;
-    public GameObject scoreList;
+    [Header("UI Texts")]
+    [SerializeField] private Text timeText;
+    [SerializeField] private Text scoreText;
+    [SerializeField] private GameObject scoreListElem;
 
-    public GameObject scoreListElem;
-    private List<Vector2> timesNscores = new List<Vector2>();
-    private Vector2[] _timesNScores;
+    [Header("Game Room")]
+    [SerializeField] private GameObject playground;
 
+    [Header("Game Assets")]
     [SerializeField] private GameObject[] cubes;
     [SerializeField] private Material[] skyboxes;
-    private int cubeNum;
-    private int cubesSpawned = 0;
-    //private System.Array dist;
-    //private System.Array prefabs;
-    private GameObject[] sortedTargets;
 
     private float t = 0f;
     private float _score = 0f;
-    // Start is called before the first frame update
+    private List<Vector2> timesNscores = new List<Vector2>();
+    private Vector2[] _timesNScores;
+
+    private int cubeNum;
+    private int cubesSpawned = 0;
+    private GameObject[] targets;
+
+    #region Unity Methods
     void Start()
     {
+        Cursor.visible = false;
         state = PlayingState.Menu;
+
+        //main menu will appear in front of player's initial position,
+        //then stay there for the whole game
         menuPanel.transform.position = pausePanel.transform.position;
 
-        timeText.text = "00:00";
+        //set random skybox from the assets
         RenderSettings.skybox = skyboxes[Random.Range(0, skyboxes.Length)];
 
-        cubeNum = 1;// Random.Range(100, 151);
-
-        Debug.Log(cubeNum);
-
         CreateTargets();
-
     }
 
-    // Update is called once per frame
     void Update()
     {
         DisplayTime();
 
+        //no targets left; game has finished
         if (transform.childCount == 0 && state == PlayingState.Playing)
         {
-            Debug.Log("FINISH");
-
+            //save scores and sort all scores
             timesNscores.Add(new Vector2(_score, t));
 
             _timesNScores = timesNscores.ToArray();
@@ -68,39 +76,92 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void DisplayTime()
+    #endregion
+
+    #region Game Logic
+
+    public void CreateTargets()
     {
-        if (state == PlayingState.Playing)
+        cubesSpawned = 0;
+        //randomize number of targets
+        cubeNum = 5;// Random.Range(100, 151);
+
+        targets = new GameObject[cubeNum];
+
+        for (int i = 0; i < cubeNum; i++)
         {
-            t += Time.deltaTime;
-            float min = Mathf.FloorToInt(t / 60);
-            float s = Mathf.FloorToInt(t % 60);
-            timeText.text = string.Format("{0:00}:{1:00}", min, s);
-        }   
+            float x = Random.Range(-4.5f, 4.5f);
+            float y = Random.Range(0.5f, 4.5f);
+            float z = Random.Range(-4.5f, 4.5f);
+
+            //in case the targets are too close
+            if (x < 2f && x > -2f && y < 2f && y > -2f && z < 2f && z > -2f)
+            {
+                x = x <= 0f ? -2f : 2f;
+                y = y <= 0f ? -2f : 2f;
+                z = z <= 0f ? -2f : 2f;
+            }
+
+            Vector3 pos = new Vector3(x, y, z);
+            Quaternion rot = Quaternion.Euler(0, Random.Range(0, 361), 0);
+            float scale = Random.Range(0.75f, 3f);
+
+            GameObject cube = Instantiate(cubes[Random.Range(0, cubes.Length)], gameObject.transform);
+            cube.transform.SetPositionAndRotation(pos, rot);
+            cube.transform.localScale *= scale;
+            cube.SetActive(false);
+
+            targets[i] = cube;
+        }
+
+        //sort targets from closer to furthest
+        targets = targets.OrderBy((obj) => (obj.transform.position - transform.position).sqrMagnitude).ToArray();
     }
 
-    public void TargetDestroyed(Vector3 targetPos)
+    public IEnumerator SpawnTargets()
     {
-        _score += 10 * (targetPos - transform.position).sqrMagnitude;
-        scoreText.text = string.Format("{0:00000}", _score);
+        //set all cubes active in 6 seconds
+        if (cubesSpawned < cubeNum)
+        {
+            targets[cubesSpawned].SetActive(true);
+            cubesSpawned++;
+            yield return new WaitForSeconds(6f / cubeNum);
+
+            StartCoroutine("SpawnTargets");
+        }
+        else
+        {
+            StopCoroutine("SpawnTargets");
+        }
+    }
+
+    public void TargetDestroyed(Transform targetTx)
+    {
+        //the further away and the smaller the target is, the more points it's worth
+        _score += (targetTx.position - transform.position).sqrMagnitude + (1f / targetTx.localScale.sqrMagnitude);
+        scoreText.text = string.Format("{0:000000}", _score);
     }
 
     public void Play()
     {
+        //in case a new game is started or current was paused during spawning
         if (state == PlayingState.Menu || cubesSpawned != 0)
         {
             StartCoroutine("SpawnTargets");
         }
+
         state = PlayingState.Playing;
+
+        //hide main menu and show timer and score
         backgroundPanel.SetActive(false);
         pausePanel.SetActive(false);
         menuPanel.SetActive(false);
-
         UI.SetActive(true);
     }
 
     public void Pause()
     {
+        //only show pause menu when in play mode 
         if (state == PlayingState.Playing)
         {
             state = PlayingState.Pause;
@@ -111,9 +172,9 @@ public class GameController : MonoBehaviour
             StopCoroutine("SpawnTargets");
         }
     }
-    
     public void Menu()
     {
+        //in case we exitted the game from pause menu, destroy remaining targets
         if (state == PlayingState.Pause)
         {
             for (int i = 0; i < transform.childCount; i++)
@@ -122,97 +183,22 @@ public class GameController : MonoBehaviour
             }
         }
         state = PlayingState.Menu;
-        //menuPanel.transform.position = pausePanel.transform.position;
-        //menuPanel.transform.rotation = pausePanel.transform.rotation;
+
+        //show main menu and hide all other game elements
         menuPanel.SetActive(true);
         menuPanel.GetComponent<AudioSource>().Play();
         backgroundPanel.SetActive(true);
         playground.SetActive(false);
         pausePanel.SetActive(false);
         UI.SetActive(false);
-        Bullet[] bullets = FindObjectsOfType<Bullet>();
-        foreach (Bullet b in bullets)
-        {
-            Destroy(b.gameObject);
-        }
+
+        //reset local time and score
         t = 0;
         _score = 0;
 
-
         UpdateScoreList();
-        //timeText.text = string.Format("{0:00}:{1:00}", t, t);
 
         CreateTargets();
-    }
-
-    public void CreateTargets()
-    {
-        GameObject[] unsortedTargets = new GameObject[cubeNum];
-        for (int i = 0; i < cubeNum; i++)
-        {
-
-            float x = Random.Range(-4.5f, 4.5f);
-            float y = Random.Range(0.5f, 4.5f);
-            float z = Random.Range(-4.5f, 4.5f);
-
-            if (x < 2f && x > -2f && y < 2f && y > -2f && z < 2f && z > -2f)
-            {
-                x = x <= 0f ? -2f : 2f;
-                y = y <= 0f ? -2f : 2f;
-                z = z <= 0f ? -2f : 2f;
-            }
-
-            Vector3 pos = new Vector3(x, y, z);
-            Quaternion rot = Quaternion.Euler(0, Random.Range(0, 361), 0); //Random.rotation;
-            float scale = Random.Range(0.75f, 3f);
-            GameObject cube = Instantiate(cubes[Random.Range(0, cubes.Length)], gameObject.transform);
-            cube.transform.SetPositionAndRotation(pos, rot);
-            cube.transform.localScale *= scale;
-            cube.SetActive(false);
-
-            unsortedTargets[i] = cube;
-
-            //Debug.Log(i + ": " + unsortedTargets[i].name + "\nd = " + (cube.transform.position - Camera.main.transform.position).sqrMagnitude);
-        }
-
-        sortedTargets = unsortedTargets.OrderBy((obj) => (obj.transform.position - FindObjectOfType<XROrigin>().transform.position).sqrMagnitude).ToArray();
-        //for (int i = 0; i < sortedTargets.Length; i++)
-        //{
-        //    Debug.Log(i + ": " + sortedTargets[i].name + "\nd = " + (sortedTargets[i].transform.position - Camera.main.transform.position).sqrMagnitude);
-       // }
-    }
-
-    private void UpdateScoreList()
-    {
-        for (int i = 0; i < scoreList.transform.childCount; i++)
-        {
-            Destroy(scoreList.transform.GetChild(i).gameObject);
-        }
-        for (int i = 0; i < _timesNScores.Length && i < 10; i++)
-        {
-            float min = Mathf.FloorToInt(_timesNScores[i].y / 60);
-            float s = Mathf.FloorToInt(_timesNScores[i].y % 60);
-            Instantiate(scoreListElem, scoreList.transform).GetComponent<Text>().text = string.Format("{0:00000}", _timesNScores[i].x) + "      " + string.Format("{0:00}:{1:00}", min, s);
-        }
-    }
-
-    public IEnumerator SpawnTargets()
-    {
-        if (cubesSpawned < cubeNum)
-        {
-            sortedTargets[cubesSpawned].SetActive(true);
-            cubesSpawned++;
-            yield return new WaitForSeconds(6f / cubeNum);
-
-            StartCoroutine("SpawnTargets");
-        }
-        else
-        {
-            cubesSpawned = 0;
-            StopCoroutine("SpawnTargets");
-            Debug.Log("ALL CUBES SPAWNED");
-        }
-
     }
 
     public void Quit()
@@ -220,10 +206,40 @@ public class GameController : MonoBehaviour
         Application.Quit();
     }
 
-    public enum PlayingState
+    #endregion
+
+    #region Time & Score UI
+
+    private void DisplayTime()
     {
-        Menu,
-        Playing,
-        Pause
+        //only increment time when in play mode
+        if (state == PlayingState.Playing)
+        {
+            t += Time.deltaTime;
+            float min = Mathf.FloorToInt(t / 60);
+            float s = Mathf.FloorToInt(t % 60);
+            timeText.text = string.Format("{0:00}:{1:00}", min, s);
+        }
     }
+
+    private void UpdateScoreList()
+    {
+        //empty old list
+        for (int i = 0; i < scoreList.transform.childCount; i++)
+        {
+            Destroy(scoreList.transform.GetChild(i).gameObject);
+        }
+
+        //refill score list
+        for (int i = 0; i < _timesNScores.Length && i < 10; i++)
+        {
+            float min = Mathf.FloorToInt(_timesNScores[i].y / 60);
+            float s = Mathf.FloorToInt(_timesNScores[i].y % 60);
+            Instantiate(scoreListElem, scoreList.transform).GetComponent<Text>().text = 
+                string.Format("{0:00000}", _timesNScores[i].x) + "      " + string.Format("{0:00}:{1:00}", min, s);
+        }
+    }
+
+    #endregion
+
 }

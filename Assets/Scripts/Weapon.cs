@@ -6,24 +6,22 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private float recoil;
-
-    //private Rigidbody rb;
-
     [SerializeField] private Transform cannon;
     [SerializeField] private GameObject bullet;
     [SerializeField] private GameObject shotParticles;
 
 
     private XRInteractorLineVisual pointer;
-    // Start is called before the first frame update
+
+    //private Rigidbody rb;
+    //[SerializeField] private float recoil;
+
     void Start()
     {
         //rb = GetComponentInChildren<Rigidbody>();
         pointer = GetComponentInParent<XRInteractorLineVisual>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (GameController.state == GameController.PlayingState.Playing && pointer.enabled)
@@ -47,13 +45,14 @@ public class Weapon : MonoBehaviour
             GetComponent<AudioSource>().Play();
 
             //Recoil();
-
         }
 
     }
 
-    /*public void Recoil()
+    /*
+    public void Recoil()
     {
         rb.AddRelativeForce(Vector3.back * recoil, ForceMode.Impulse);
-    }*/
+    }
+    */
 }
