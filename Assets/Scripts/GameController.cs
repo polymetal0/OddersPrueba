@@ -67,7 +67,8 @@ public class GameController : MonoBehaviour
         if (transform.childCount == 0 && state == PlayingState.Playing)
         {
             timeText.text = "00:00";
-            scoreText.text = "000000";
+            scoreText.text = "00000";
+
             //save scores and sort all scores
             timesNscores.Add(new Vector2(_score, t));
 

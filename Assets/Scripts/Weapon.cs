@@ -24,6 +24,7 @@ public class Weapon : MonoBehaviour
 
     void Update()
     {
+        //hide LineRenderer when in play mode
         if (GameController.state == GameController.PlayingState.Playing && pointer.enabled)
         {
             pointer.enabled = false;
@@ -38,7 +39,7 @@ public class Weapon : MonoBehaviour
     {
         if (GameController.state == GameController.PlayingState.Playing && context.performed)
         {
-            Debug.Log("shoot");
+            //Instantiate bullet, vfx and sfx
             Instantiate(shotParticles, cannon.position, cannon.rotation);
 
             Instantiate(bullet, cannon.position, cannon.rotation);
