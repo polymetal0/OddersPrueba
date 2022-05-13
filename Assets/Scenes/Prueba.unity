@@ -782,7 +782,7 @@ RectTransform:
   m_Children:
   - {fileID: 218311023}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -896,7 +896,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!108 &136779722
 Light:
@@ -1212,7 +1212,7 @@ Transform:
   - {fileID: 145111290}
   - {fileID: 318358976}
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &218311022
 GameObject:
@@ -1498,7 +1498,7 @@ RectTransform:
   - {fileID: 1779897385}
   - {fileID: 1623726391}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2400,7 +2400,7 @@ RectTransform:
   - {fileID: 1728694586}
   - {fileID: 979498809}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3108,7 +3108,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &1076681046
 AudioSource:
@@ -3222,12 +3222,12 @@ MonoBehaviour:
   backgroundPanel: {fileID: 90472846}
   pausePanel: {fileID: 1720759264}
   UI: {fileID: 310984432}
-  playground: {fileID: 342679441}
+  scoreList: {fileID: 1784038210}
   timeText: {fileID: 1796750471}
   scoreText: {fileID: 393657153}
-  scoreList: {fileID: 1784038210}
   scoreListElem: {fileID: 958856373513738276, guid: fcd03cf765171134e85faa4d789e9793,
     type: 3}
+  playground: {fileID: 342679441}
   cubes:
   - {fileID: 198222, guid: 6f364a339d7ab5645a9a4767e2c68c1d, type: 3}
   - {fileID: 143654, guid: 29497e1a2d98bb243b5269f07c8f8801, type: 3}
@@ -3740,7 +3740,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: a93c012dd9ef6454fa7d140e976926f7, type: 3}
       propertyPath: m_Text
-      value: 000000
+      value: 00000
       objectReference: {fileID: 0}
     - target: {fileID: 22400002, guid: a93c012dd9ef6454fa7d140e976926f7, type: 3}
       propertyPath: m_Pivot.x
@@ -5052,7 +5052,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1712184357
 GameObject:
@@ -5516,7 +5516,7 @@ PrefabInstance:
     - target: {fileID: 6598815579406187027, guid: 9f5a24a380916d14db9775daab4fe333,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187027, guid: 9f5a24a380916d14db9775daab4fe333,
         type: 3}

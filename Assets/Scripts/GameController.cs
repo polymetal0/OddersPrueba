@@ -66,6 +66,8 @@ public class GameController : MonoBehaviour
         //no targets left; game has finished
         if (transform.childCount == 0 && state == PlayingState.Playing)
         {
+            timeText.text = "00:00";
+            scoreText.text = "000000";
             //save scores and sort all scores
             timesNscores.Add(new Vector2(_score, t));
 
@@ -84,7 +86,7 @@ public class GameController : MonoBehaviour
     {
         cubesSpawned = 0;
         //randomize number of targets
-        cubeNum = 5;// Random.Range(100, 151);
+        cubeNum = Random.Range(100, 151);
 
         targets = new GameObject[cubeNum];
 
@@ -139,7 +141,7 @@ public class GameController : MonoBehaviour
     {
         //the further away and the smaller the target is, the more points it's worth
         _score += (targetTx.position - transform.position).sqrMagnitude + (1f / targetTx.localScale.sqrMagnitude);
-        scoreText.text = string.Format("{0:000000}", _score);
+        scoreText.text = string.Format("{0:00000}", _score);
     }
 
     public void Play()
