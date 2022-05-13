@@ -17,16 +17,22 @@ public class GameController : MonoBehaviour
 
     public Text timeText;
     public Text scoreText;
+    public GameObject scoreList;
+
+    public GameObject scoreListElem;
+    private List<Vector2> timesNscores = new List<Vector2>();
+    private Vector2[] _timesNScores;
 
     [SerializeField] private GameObject[] cubes;
+    [SerializeField] private Material[] skyboxes;
     private int cubeNum;
     private int cubesSpawned = 0;
     //private System.Array dist;
     //private System.Array prefabs;
     private GameObject[] sortedTargets;
 
-    float t = 0f;
-    float _score = 0f;
+    private float t = 0f;
+    private float _score = 0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,8 +40,9 @@ public class GameController : MonoBehaviour
         menuPanel.transform.position = pausePanel.transform.position;
 
         timeText.text = "00:00";
+        RenderSettings.skybox = skyboxes[Random.Range(0, skyboxes.Length)];
 
-        cubeNum = 1;// (int)Random.Range(100, 150);
+        cubeNum = 1;// Random.Range(100, 151);
 
         Debug.Log(cubeNum);
 
@@ -51,6 +58,12 @@ public class GameController : MonoBehaviour
         if (transform.childCount == 0 && state == PlayingState.Playing)
         {
             Debug.Log("FINISH");
+
+            timesNscores.Add(new Vector2(_score, t));
+
+            _timesNScores = timesNscores.ToArray();
+            _timesNScores = _timesNScores.OrderByDescending(v => v.x).ToArray();
+
             Menu();
         }
     }
@@ -66,9 +79,9 @@ public class GameController : MonoBehaviour
         }   
     }
 
-    public void TargetDestroyed()
+    public void TargetDestroyed(Vector3 targetPos)
     {
-        _score += 10;
+        _score += 10 * (targetPos - transform.position).sqrMagnitude;
         scoreText.text = string.Format("{0:00000}", _score);
     }
 
@@ -123,7 +136,10 @@ public class GameController : MonoBehaviour
             Destroy(b.gameObject);
         }
         t = 0;
+        _score = 0;
 
+
+        UpdateScoreList();
         //timeText.text = string.Format("{0:00}:{1:00}", t, t);
 
         CreateTargets();
@@ -147,9 +163,9 @@ public class GameController : MonoBehaviour
             }
 
             Vector3 pos = new Vector3(x, y, z);
-            Quaternion rot = Quaternion.Euler(0, Random.Range(0, 360), 0); //Random.rotation;
+            Quaternion rot = Quaternion.Euler(0, Random.Range(0, 361), 0); //Random.rotation;
             float scale = Random.Range(0.75f, 3f);
-            GameObject cube = Instantiate(cubes[Random.Range(0, cubes.Length - 1)], gameObject.transform);
+            GameObject cube = Instantiate(cubes[Random.Range(0, cubes.Length)], gameObject.transform);
             cube.transform.SetPositionAndRotation(pos, rot);
             cube.transform.localScale *= scale;
             cube.SetActive(false);
@@ -164,6 +180,20 @@ public class GameController : MonoBehaviour
         //{
         //    Debug.Log(i + ": " + sortedTargets[i].name + "\nd = " + (sortedTargets[i].transform.position - Camera.main.transform.position).sqrMagnitude);
        // }
+    }
+
+    private void UpdateScoreList()
+    {
+        for (int i = 0; i < scoreList.transform.childCount; i++)
+        {
+            Destroy(scoreList.transform.GetChild(i).gameObject);
+        }
+        for (int i = 0; i < _timesNScores.Length && i < 10; i++)
+        {
+            float min = Mathf.FloorToInt(_timesNScores[i].y / 60);
+            float s = Mathf.FloorToInt(_timesNScores[i].y % 60);
+            Instantiate(scoreListElem, scoreList.transform).GetComponent<Text>().text = string.Format("{0:00000}", _timesNScores[i].x) + "      " + string.Format("{0:00}:{1:00}", min, s);
+        }
     }
 
     public IEnumerator SpawnTargets()

@@ -51,7 +51,7 @@ public class Bullet : MonoBehaviour
 
             Instantiate(blocks, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             Destroy(gameObject);
-            FindObjectOfType<GameController>().TargetDestroyed();
+            FindObjectOfType<GameController>().TargetDestroyed(collision.gameObject.transform.position);
         }
 
     }
