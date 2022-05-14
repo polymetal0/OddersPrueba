@@ -85,6 +85,8 @@ public class GameController : MonoBehaviour
 
     public void CreateTargets()
     {
+        float roomSize = 5f;
+
         cubesSpawned = 0;
         //randomize number of targets
         cubeNum = Random.Range(100, 151);
@@ -93,19 +95,16 @@ public class GameController : MonoBehaviour
 
         for (int i = 0; i < cubeNum; i++)
         {
-            float x = Random.Range(-4.5f, 4.5f);
-            float y = Random.Range(0.5f, 4.5f);
-            float z = Random.Range(-4.5f, 4.5f);
+            Vector3 pos = new Vector3(Random.Range(-(roomSize - 0.25f), roomSize - 0.25f), Random.Range(0.25f, roomSize - 0.25f), Random.Range(-(roomSize - 0.25f), roomSize - 0.25f));
 
             //in case the targets are too close
-            if (x < 2f && x > -2f && y < 2f && y > -2f && z < 2f && z > -2f)
+            if (pos.x < 2f && pos.x > -2f && pos.y < 2f && pos.y > -2f && pos.z < 2f && pos.z > -2f)
             {
-                x = x <= 0f ? -2f : 2f;
-                y = y <= 0f ? -2f : 2f;
-                z = z <= 0f ? -2f : 2f;
+                pos.x = pos.x <= 0f ? -2f : 2f;
+                pos.y = pos.y <= 0f ? -2f : 2f;
+                pos.z = pos.z <= 0f ? -2f : 2f;
             }
 
-            Vector3 pos = new Vector3(x, y, z);
             Quaternion rot = Quaternion.Euler(0, Random.Range(0, 361), 0);
             float scale = Random.Range(0.75f, 3f);
 
@@ -190,7 +189,7 @@ public class GameController : MonoBehaviour
         //show main menu and hide all other game elements
         menuPanel.SetActive(true);
         menuPanel.GetComponent<AudioSource>().Play();
-        backgroundPanel.SetActive(true);
+        backgroundPanel.SetActive(false);
         playground.SetActive(false);
         pausePanel.SetActive(false);
         UI.SetActive(false);
@@ -234,13 +233,17 @@ public class GameController : MonoBehaviour
         }
 
         //refill score list
-        for (int i = 0; i < _timesNScores.Length && i < 10; i++)
+        if (_timesNScores != null)
         {
-            float min = Mathf.FloorToInt(_timesNScores[i].y / 60);
-            float s = Mathf.FloorToInt(_timesNScores[i].y % 60);
-            Instantiate(scoreListElem, scoreList.transform).GetComponent<Text>().text = 
-                string.Format("{0:00000}", _timesNScores[i].x) + "      " + string.Format("{0:00}:{1:00}", min, s);
+            for (int i = 0; i < _timesNScores.Length && i < 10; i++)
+            {
+                float min = Mathf.FloorToInt(_timesNScores[i].y / 60);
+                float s = Mathf.FloorToInt(_timesNScores[i].y % 60);
+                Instantiate(scoreListElem, scoreList.transform).GetComponent<Text>().text =
+                    string.Format("{0:00000}", _timesNScores[i].x) + "      " + string.Format("{0:00}:{1:00}", min, s);
+            }
         }
+       
     }
 
     #endregion
